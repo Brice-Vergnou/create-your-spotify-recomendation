@@ -5,6 +5,8 @@ import pandas as pd
 import json
 import urllib.parse
 
+# TODO #2 : Allow the user wether they want to have stats for a track , a playlist , an album or an artist
+# TODO #3 : Add a UI
 try :
     model = pickle.load(open("model.sav", 'rb'))
     try :
