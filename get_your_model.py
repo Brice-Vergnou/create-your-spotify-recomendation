@@ -126,7 +126,7 @@ if done_getting:
 if done_cleaning:
     print("\n\nCreating your model.....")
     X , y = data.drop("liked",axis=1) , data.liked
-    model = RandomForestClassifier()
+    model = RandomForestClassifier() # TODO #4 Add small hyperparameter tuning ( keep the default values in the grid to avoid any accuracy loss ! )
     model.fit(X, y)
     with open("model.sav", 'wb') as f:
         pickle.dump(model, f)
