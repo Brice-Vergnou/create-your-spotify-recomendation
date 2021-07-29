@@ -76,7 +76,7 @@ try :
             
         # Get the data from the disliked playlists
         i = 1
-        while i < 5 : # TODO #1 : make it easy for the user searching for a playlist
+        while i < 5 :
             query = input(f"\n\nName of the 'disliked' playlist n.{i}: ")
             query = urllib.parse.quote(query)
             stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/search?q={query}&type=playlist" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')

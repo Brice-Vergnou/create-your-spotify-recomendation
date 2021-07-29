@@ -41,5 +41,5 @@ try :
             Log in to your spotify Account , and then copy what's in "OAuth Token" field 
             into a file called "token.txt" in the root directory of the project
             """)
-except:
+except FileNotFoundError:
     print("You didn't generate a predictor yet ! Run get_your_model.py , everything will be explained")
