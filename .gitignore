@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+token.txt
+good.json
+bad1.json
+bad2.json
+bad3.json
+bad4.json
