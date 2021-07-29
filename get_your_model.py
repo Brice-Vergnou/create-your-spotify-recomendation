@@ -131,16 +131,4 @@ if done_cleaning:
     with open("model.sav", 'wb') as f:
         pickle.dump(model, f)
     print("\nDone !\n")
-    
-    
-    
-    
-    
-
-
-# id = 2WONKi3eZaR29QaQCRSiAE
-# 37i9dQZF1DX2fxPY4lXxv8
-# 37i9dQZF1DZ06evO0grpKg
-# 1h0CEZCm6IbFTbxThn6Xcs
-# 2rkU3Aop33atDJoF8LCCjh
 
