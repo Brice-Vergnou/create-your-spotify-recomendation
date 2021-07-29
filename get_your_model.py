@@ -1,8 +1,7 @@
 import pickle
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split , GridSearchCV
 import pandas as pd
 import os
 import json
@@ -38,6 +37,7 @@ print("""Hello !
             
             Your predictor will be the file "model.sav".
             You can't read it but once generated , head to the main.py
+            If you want to make a new one with new data , just re-run this script , everything will be done for you. 
             
             Have fun :)\n\n
           """)
@@ -124,13 +124,13 @@ if done_getting:
 
 # Modelling 
 if done_cleaning:
+    print("\n\nCreating your model.....")
     X , y = data.drop("liked",axis=1) , data.liked
-    std = StandardScaler()
-    X = std.fit_transform(X)
     model = RandomForestClassifier()
     model.fit(X, y)
     with open("model.sav", 'wb') as f:
         pickle.dump(model, f)
+    print("\nDone !\n")
     
     
     
