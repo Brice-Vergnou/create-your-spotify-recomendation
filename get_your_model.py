@@ -1,6 +1,6 @@
 import pickle
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split , GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV
 import pandas as pd
 import os
 import json
@@ -61,62 +61,69 @@ print("""Hello !
           """)
 
 # Get data
-try :
+try:
     # Get token 
-    with open("token.txt","r") as f:
-        token = f.read().replace("\n","")
-        
+    with open("token.txt", "r") as f:
+        token = f.read().replace("\n", "")
+
     # Get the data from the liked playlist
     playlist_id = input("ID of the 'liked' playlist : ")
     playlist_id = urllib.parse.quote(playlist_id)
-    stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/playlists/{playlist_id}/tracks?fields=items(track(id%2Cname))" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
+    stream = os.popen(
+        f'curl -X "GET" "https://api.spotify.com/v1/playlists/{playlist_id}/tracks?fields=items(track(id%2Cname))" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
     data = stream.read()
-    try :
+    try:
         data = json.loads(data)["items"]
         songs_ids = ""
         for track in data:
             songs_ids += track["track"]["id"] + ","
         songs_ids = songs_ids[:-1]
-        stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/audio-features?ids={songs_ids}" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
+        stream = os.popen(
+            f'curl -X "GET" "https://api.spotify.com/v1/audio-features?ids={songs_ids}" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
         data = stream.read()
-        with open("data/good.json","w") as f:
+        with open("data/good.json", "w") as f:
             f.write(data)
-            
+
         # Get the data from the disliked playlists
         i = 1
-        while i < 5 :
+        while i < 5:
             query = input(f"\n\nName of the 'disliked' playlist n.{i}: ")
             query = urllib.parse.quote(query)
-            stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/search?q={query}&type=playlist" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
+            stream = os.popen(
+                f'curl -X "GET" "https://api.spotify.com/v1/search?q={query}&type=playlist" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
             data = stream.read()
-            
-            try :
+
+            try:
                 data = json.loads(data)["playlists"]["items"][0]
                 bad_playlist.append(data["name"])
                 playlist_id = data["id"]
-                stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/playlists/{playlist_id}/tracks?fields=items(track(id%2Cname))?limit=25" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
+                stream = os.popen(
+                    f'curl -X "GET" "https://api.spotify.com/v1/playlists/{playlist_id}/tracks?fields=items(track(id%2Cname))?limit=25" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
                 data = stream.read()
-                try :
+                try:
                     data = json.loads(data)["items"]
                     songs_ids = ""
                     for track in data:
                         songs_ids += track["track"]["id"] + ","
                     songs_ids = songs_ids[:-1]
-                    stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/audio-features?ids={songs_ids}" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
+                    stream = os.popen(
+                        f'curl -X "GET" "https://api.spotify.com/v1/audio-features?ids={songs_ids}" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
                     data = stream.read()
-                    with open(f"data/bad{i}.json","w") as f:
+                    with open(f"data/bad{i}.json", "w") as f:
                         f.write(data)
-                    i +=1
-                        
+                    i += 1
+
                 except KeyError:
-                    print("\n\n\nYour token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/\n\n\n")
+                    print(
+                        "\n\n\nYour token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/\n\n\n")
             except KeyError:
-                print("\n\n\nYour token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/\n\n\n")
+                print(
+                    "\n\n\nYour token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/\n\n\n")
             except IndexError:
                 print("\n\n\nWe didn't find the playlist you were looking for\n\n\n")
-        
+
         done_getting = True
-        
+
     except KeyError:
         print("""\n\n
                        Your token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/
@@ -132,37 +139,34 @@ except FileNotFoundError:
           Log in to your spotify Account , and then copy what's in "OAuth Token" field 
           into a file called "token.txt" in the root directory of the project
           """)
-    
+
 # Clean and process data
 if done_getting:
-    with open("data/good.json","r") as f:
+    with open("data/good.json", "r") as f:
         liked = json.load(f)
     liked = pd.DataFrame(liked["audio_features"])
     liked["liked"] = [1] * 100
-    for i in range(1,5):
-        with open(f"data/bad{i}.json","r") as f:
+    for i in range(1, 5):
+        with open(f"data/bad{i}.json", "r") as f:
             disliked = json.load(f)
         exec(f"bad{i} = pd.DataFrame(disliked['audio_features'][:25])")
-        try : 
+        try:
             exec(f'bad{i}["liked"] = [0] * 25')
             done_cleaning = True
         except ValueError:
             print(f"\n\n{bad_playlist[i]} wasn't long enough. It has to be at least 25 songs long.")
             break
 
-        
-        
-
-# Modelling 
+# Modelling
 if done_cleaning:
-    data = pd.concat([liked,bad1,bad2,bad3,bad4])
-    data.drop(["type","id","uri","track_href","analysis_url"],axis=1,inplace=True)
+    data = pd.concat([liked, bad1, bad2, bad3, bad4])
+    data.drop(["type", "id", "uri", "track_href", "analysis_url"], axis=1, inplace=True)
     data = data.sample(frac=1)
-    data.to_csv("data/data.csv",index=False)
+    data.to_csv("data/data.csv", index=False)
     create_pdf()
     print("\n\nCreating your model.....")
-    X , y = data.drop("liked",axis=1) , data.liked
-    model = RandomForestClassifier() # TODO #4 Add small hyperparameter tuning ( keep the default values in the grid to avoid any accuracy loss ! )
+    X, y = data.drop("liked", axis=1), data.liked
+    model = RandomForestClassifier()  # TODO #4 Add small hyperparameter tuning ( keep the default values in the grid to avoid any accuracy loss ! )
     model.fit(X, y)
     with open("data/model.sav", 'wb') as f:
         pickle.dump(model, f)
@@ -179,4 +183,3 @@ if done_cleaning:
     print("\n\nSummary of the bad playlists : ( make sure they are correct ) \n")
     for i in bad_playlist:
         print(i)
-
