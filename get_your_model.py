@@ -1,11 +1,11 @@
 import pickle
-from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split , GridSearchCV
 import pandas as pd
 import os
 import json
 import urllib.parse
+from stats import create_pdf
 
 done_getting = False
 done_cleaning = False
@@ -71,7 +71,7 @@ try :
         songs_ids = songs_ids[:-1]
         stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/audio-features?ids={songs_ids}" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
         data = stream.read()
-        with open("good.json","w") as f:
+        with open("data/good.json","w") as f:
             f.write(data)
             
         # Get the data from the disliked playlists
@@ -96,7 +96,7 @@ try :
                     songs_ids = songs_ids[:-1]
                     stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/audio-features?ids={songs_ids}" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
                     data = stream.read()
-                    with open(f"bad{i}.json","w") as f:
+                    with open(f"data/bad{i}.json","w") as f:
                         f.write(data)
                     i +=1
                         
@@ -127,15 +127,12 @@ except FileNotFoundError:
     
 # Clean and process data
 if done_getting:
-    print("\n\nSummary of the bad playlists : \n")
-    for i in bad_playlist:
-        print(i)
-    with open("good.json","r") as f:
+    with open("data/good.json","r") as f:
         liked = json.load(f)
     liked = pd.DataFrame(liked["audio_features"])
     liked["liked"] = [1] * 100
     for i in range(1,5):
-        with open(f"bad{i}.json","r") as f:
+        with open(f"data/bad{i}.json","r") as f:
             disliked = json.load(f)
         exec(f"bad{i} = pd.DataFrame(disliked['audio_features'][:25])")
         try : 
@@ -153,12 +150,25 @@ if done_cleaning:
     data = pd.concat([liked,bad1,bad2,bad3,bad4])
     data.drop(["type","id","uri","track_href","analysis_url"],axis=1,inplace=True)
     data = data.sample(frac=1)
-    data.to_csv("data.csv",index=False)
+    data.to_csv("data/data.csv",index=False)
+    create_pdf()
     print("\n\nCreating your model.....")
     X , y = data.drop("liked",axis=1) , data.liked
     model = RandomForestClassifier() # TODO #4 Add small hyperparameter tuning ( keep the default values in the grid to avoid any accuracy loss ! )
     model.fit(X, y)
-    with open("model.sav", 'wb') as f:
+    with open("data/model.sav", 'wb') as f:
         pickle.dump(model, f)
-    print("\nDone !\n")
+    print("""
+          
+          
+          
+          Your model is ready !
+          
+          A summary of your stats is available on stats/stats.pdf
+          
+          You can now use main.py , enjoy :)
+          """)
+    print("\n\nSummary of the bad playlists : ( make sure they are correct ) \n")
+    for i in bad_playlist:
+        print(i)
 
