@@ -29,7 +29,7 @@ print("""Hello !
           
           To make it work , you'll just have to :
           
-            -   Get a Spotify playlist ready. This playlist will cointain 100 songs ( you can have more but only the 100 first will be used ).
+            -   Get a Spotify playlist ready. This playlist will cointain at least 100 songs ( you can have more but only the 100 first will be used ).
                 Try to use the BEST songs in your opinion so the algorithm will perfectly know what you like
                 The 'Liked songs' playlist can't work because it is private
                 ( don't worry about privacy , we don't even have servers to store your data , it will then remain private and on your computer )
@@ -43,7 +43,7 @@ print("""Hello !
                 And don't worry ! You don't have to create these playlist. You can just use the "This is [name of the artist]" playlists 
                 made by Spotify , or type the name of the gender you don't like and take the first playlist. 
                 Each of these playlists have to be at least 25 songs long
-                You will have to give us its name , so be precise when you type it
+                You will have to give us its ID
                 At the end , you will have a summary of the "bad" playlists to make sure they're all right
                 
             Once you have these playlists , just copy their links. They will look like this
@@ -86,39 +86,26 @@ try:
 
         # Get the data from the disliked playlists
         i = 1
-        while i < 5:
-            query = input(f"\n\nName of the 'disliked' playlist n.{i}: ")
-            query = urllib.parse.quote(query)
-            stream = os.popen(
-                f'curl -X "GET" "https://api.spotify.com/v1/search?q={query}&type=playlist" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
+        while i < 5 :
+            playlist_id = input(f"\n\nID of the 'disliked' playlist n.{i}: ")
+            playlist_id = urllib.parse.quote(playlist_id)
+            stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/playlists/{playlist_id}/tracks?fields=items(track(id%2Cname))?limit=25" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
             data = stream.read()
-
-            try:
-                data = json.loads(data)["playlists"]["items"][0]
-                bad_playlist.append(data["name"])
-                playlist_id = data["id"]
-                stream = os.popen(
-                    f'curl -X "GET" "https://api.spotify.com/v1/playlists/{playlist_id}/tracks?fields=items(track(id%2Cname))?limit=25" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
+            try :
+                data = json.loads(data)["items"]
+                songs_ids = ""
+                for track in data:
+                    songs_ids += track["track"]["id"] + ","
+                songs_ids = songs_ids[:-1]
+                stream = os.popen(f'curl -X "GET" "https://api.spotify.com/v1/audio-features?ids={songs_ids}" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
                 data = stream.read()
-                try:
-                    data = json.loads(data)["items"]
-                    songs_ids = ""
-                    for track in data:
-                        songs_ids += track["track"]["id"] + ","
-                    songs_ids = songs_ids[:-1]
-                    stream = os.popen(
-                        f'curl -X "GET" "https://api.spotify.com/v1/audio-features?ids={songs_ids}" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
-                    data = stream.read()
-                    with open(f"data/bad{i}.json", "w") as f:
-                        f.write(data)
-                    i += 1
+                with open(f"data/bad{i}.json","w") as f:
+                    f.write(data)
+                i +=1
 
-                except KeyError:
+            except KeyError:
                     print(
                         "\n\n\nYour token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/\n\n\n")
-            except KeyError:
-                print(
-                    "\n\n\nYour token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/\n\n\n")
             except IndexError:
                 print("\n\n\nWe didn't find the playlist you were looking for\n\n\n")
 
@@ -136,7 +123,7 @@ except FileNotFoundError:
           
           To create one , visit this page : https://developer.spotify.com/console/get-several-tracks/
           
-          Log in to your spotify Account , and then copy what's in "OAuth Token" field 
+          Log in to your spotify Account , do not check any scope, and then copy what's in "OAuth Token" field 
           into a file called "token.txt" in the root directory of the project
           """)
 
