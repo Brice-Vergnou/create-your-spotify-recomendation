@@ -10,6 +10,14 @@ from stats import create_pdf
 done_getting = False
 done_cleaning = False
 bad_playlist = []
+try:
+    os.mkdir("data")
+except FileExistsError:
+    pass
+try:
+    os.mkdir("stats")
+except FileExistsError:
+    pass
 
 print("""Hello !
           
