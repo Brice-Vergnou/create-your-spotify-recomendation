@@ -1,5 +1,4 @@
 import pickle
-from sklearn.ensemble import RandomForestClassifier
 import os
 import pandas as pd
 import json

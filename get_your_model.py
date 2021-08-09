@@ -1,11 +1,15 @@
 import pickle
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 import pandas as pd
-import os
+import os , sys
 import json
 import urllib.parse
 from stats import create_pdf
+from pycaret.classification import *
+from contextlib import contextmanager
+import warnings
+warnings.filterwarnings("ignore")
 
 done_getting = False
 done_cleaning = False
@@ -18,6 +22,16 @@ try:
     os.mkdir("stats")
 except FileExistsError:
     pass
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = open(os.devnull, "w")
+        sys.stderr = open(os.devnull, "w")
+        try:  
+            yield
+        finally:
+            sys.stdout = old_stdout
 
 print("""Hello !
           
@@ -150,10 +164,14 @@ if done_cleaning:
     data.drop(["type", "id", "uri", "track_href", "analysis_url"], axis=1, inplace=True)
     data = data.sample(frac=1)
     data.to_csv("data/data.csv", index=False)
-    create_pdf()
-    print("\n\nCreating your model.....")
     X, y = data.drop("liked", axis=1), data.liked
-    model = RandomForestClassifier()  # TODO #4 Add small hyperparameter tuning ( keep the default values in the grid to avoid any accuracy loss ! )
+    print("\n\nCreating your model..... ( this may take some time depending on your compute power)\nPress Enter to continue ( don't mind the warnings after that )")
+    with suppress_stdout():
+        s = setup(data, target = 'liked', session_id = 123)
+        model = compare_models()
+    accuracy = pull().iloc[0]["Accuracy"]
+    print(accuracy)
+    create_pdf()
     model.fit(X, y)
     with open("data/model.sav", 'wb') as f:
         pickle.dump(model, f)
@@ -163,10 +181,7 @@ if done_cleaning:
           
           Your model is ready !
           
-          A summary of your stats is available on stats/stats.pdf
+          A summary of your stats is available in stats/stats.pdf
           
           You can now use main.py , enjoy :)
           """)
-    print("\n\nSummary of the bad playlists : ( make sure they are correct ) \n")
-    for i in bad_playlist:
-        print(i)
