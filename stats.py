@@ -110,8 +110,10 @@ def create_pdf():
                       "\n    Basically , if a variable has a positive correlation with liked ( greater than 0 ),")
     canvas.drawString(50, 130, "         it means that when this variable rises , 'liked' rises as well.")
     canvas.drawString(50, 100, "\n    The opposite is true as well when when the correlation is negative.")
-    canvas.drawString(50, 70, "\n    An explanation of your stats is available on the next page.")
-    canvas.drawString(50, 40, "\n    You can check the high quality image in heatmap.png")
+    canvas.drawString(50, 70, "\n    A null correlation means the variable doesn't affect the result")
+    canvas.setFont("Helvetica", 10)
+    canvas.drawString(50, 45, "\n    An explanation of your stats is available on the next page.")
+    canvas.drawString(50, 25, "\n    You can check the high quality image in heatmap.png")
     canvas.showPage()
 
     canvas.setFont("Helvetica", 20)

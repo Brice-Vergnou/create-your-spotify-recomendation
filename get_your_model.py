@@ -185,3 +185,4 @@ if done_cleaning:
           
           You can now use main.py , enjoy :)
           """)
+    os. system("pause")
