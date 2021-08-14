@@ -10,7 +10,7 @@ from pycaret.classification import *
 welcome_message = """
           Hello !
           
-          Thanks for using our program , you'll be able to build your own recommandation tool.
+          Thanks for using our tool , you'll be able to build your own recommandation tool.
           You'll be able to find out if you like or not a song just giving its name , we analyse it for you
           and we tell you if it's your taste or not.
           
