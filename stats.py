@@ -127,4 +127,3 @@ def create_pdf():
         h -= 30
 
     canvas.save()
-create_pdf()
