@@ -1,6 +1,9 @@
 # Spotify Recommandation
 ### _Create your own recommandation system_
 
+![image](https://user-images.githubusercontent.com/86613710/129451225-cbad9100-7969-42f5-9947-d1dfd736bc84.png)
+
+
 This tool allows you to build your own recommandation system based on a few playlists
 
 ## Features
