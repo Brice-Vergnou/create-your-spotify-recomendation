@@ -33,7 +33,10 @@ welcome_message = """
                 made by Spotify , or type the name of the gender you don't like and take the first playlist. 
                 Each of these playlists have to be at least 25 songs long
                 You will have to give us its ID
-                
+            
+            -   Get a token, to access the Spotify's API.
+                To do so, visit this link :  https://developer.spotify.com/console/get-several-tracks/
+                Click on "Get Token", log in and then copy the token in a file called tokent.txt in the root directory of the project
             
             Some files are going to be generated , you don't have to worry about them but
             DON'T DELETE THEM :(

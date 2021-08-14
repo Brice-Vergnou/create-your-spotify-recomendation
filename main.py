@@ -110,5 +110,5 @@ def get_stats(title,type):
 
 inter = gr.Interface(get_stats, inputs=["text",gr.inputs.Radio(["Track", "Album", "Playlist ID ( only 100 songs will be used )"])], outputs="text",title="Do you like this song ?",
                      description="Just write the name of a song and it will tell you the chances you like it. If you write the name of an artist, it'll proceed with one of the songs of this artist. If you can't find the song you're looking for , type the title AND the name of the artist. You can find your old results in the 'flagged' folder.",
-                     examples=[["37i9dQZF1DZ06evO2h94tp","Playlist ID ( only 100 songs will be used )"],["Puzzle","Album"],["Megazord KIKESA","Track"]])
+                     examples=[["2WONKi3eZaR29QaQCRSiAE","Playlist ID ( only 100 songs will be used )"],["Puzzle","Album"],["Fight Back","Track"]])
 inter.launch(inbrowser=True)
