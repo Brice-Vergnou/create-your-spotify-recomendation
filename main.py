@@ -33,8 +33,6 @@ def get_stats(title,type):
                         return "Your token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/"
                 except IndexError:
                     return "We didn't find the song you were looking for"
-                except:
-                    return data
             elif type=="Album":
                 stream = os.popen(
                     f'curl -X "GET" "https://api.spotify.com/v1/search?q={query}&type=album" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')
@@ -69,8 +67,6 @@ def get_stats(title,type):
                         return "Your token has expired , create a new one : https://developer.spotify.com/console/get-several-tracks/"
                 except IndexError:
                     return "We didn't find the song you were looking for"
-                except:
-                    return data
             else:
                 stream = os.popen(
                     f'curl -X "GET" "https://api.spotify.com/v1/playlists/{query.replace("%20","")}/tracks?fields=items(track(id%2Cname))" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {token}"')

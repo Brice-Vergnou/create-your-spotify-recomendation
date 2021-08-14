@@ -165,9 +165,10 @@ def get_stats(liked_Playlist,disliked_Playlist_1,disliked_Playlist_2,disliked_Pl
         data.drop(["type", "id", "uri", "track_href", "analysis_url"], axis=1, inplace=True)
         data = data.sample(frac=1)
         data.to_csv("data/data.csv", index=False)
+        data = pd.read_csv("data/data.csv")
         s = setup(data, target = 'liked', session_id = 123,silent=True)
         model = create_model('rf', fold = 5)
-        create_pdf()
+        model.fit(data.drop("liked",axis=1),data.liked)
         with open("data/model.sav", 'wb') as f:
             pickle.dump(model, f)
         return """
