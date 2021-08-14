@@ -20,7 +20,7 @@ Dillinger requires [Python3](https://www.python.org/downloads/) and [Pip](https:
 Install the repository
 
 ```sh
-git clone git@github.com:Brice-Vergnou/create-your-spotify-recomendation.git
+git clone https://github.com/Brice-Vergnou/create-your-spotify-recomendation.git
 ```
 
 Install the dependencies
